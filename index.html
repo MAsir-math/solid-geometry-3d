@@ -531,39 +531,36 @@ function buildOverlay() {
     name = '二面角 SAB–SBC';
     hint = '側面 ↔ 側面（內角）';
     title = '側面 ↔ 側面 · 二面角（SAB 與 SBC）';
-    body = '相鄰側面 SAB 與 SBC 沿共用側棱 SB 所夾之內二面角。作圖：於 SB 上取點 P，分別喺兩面內作垂直於 SB 嘅線，再量兩線夾角。';
+    body = '由 A、C 分別作垂直於 SB 嘅線，垂足同為 P（對稱）；量 ∠APC（即二面角 SAB–SBC 嘅平面角）。';
     tex = String.raw`\cos\alpha_{\mathrm{n}}=\dfrac{b^{2}}{4h^{2}+b^{2}},\quad\theta_{\mathrm{內}}=\pi-\arccos\!\left(\dfrac{b^{2}}{4h^{2}+b^{2}}\right)`;
     highlightFace(P.S, P.A, P.B, 0x22d3ee);
     highlightFace(P.S, P.B, P.C, 0xe879f9);
     overlayRoot.add(fatEdge(P.S, P.B, 0xf8fafc, 0.04));
     if (showC) {
+      // Foot of ⊥ from A onto line SB (= foot from C by reflection in plane SBO)
       const SB = P.B.clone().sub(P.S);
-      const Pmid = P.S.clone().add(P.B).multiplyScalar(0.5);
-      // directions in each face ⊥ SB: n × SB
-      const d1 = new THREE.Vector3().crossVectors(ang.nSab, SB).normalize();
-      const d2 = new THREE.Vector3().crossVectors(ang.nSbc, SB).normalize();
-      // orient both pointing somewhat "away from apex along face"
-      // flip so they point toward face interiors from edge — use midpoints of AB, BC
-      const midAB = P.A.clone().add(P.B).multiplyScalar(0.5);
-      const midBC = P.B.clone().add(P.C).multiplyScalar(0.5);
-      if (d1.dot(midAB.clone().sub(Pmid)) < 0) d1.negate();
-      if (d2.dot(midBC.clone().sub(Pmid)) < 0) d2.negate();
-      const len = Math.min(state.b, state.h) * 0.55;
-      const Q1 = Pmid.clone().add(d1.clone().multiplyScalar(len));
-      const Q2 = Pmid.clone().add(d2.clone().multiplyScalar(len));
-      overlayRoot.add(fatEdge(Pmid, Q1, 0x22d3ee, 0.028));
-      overlayRoot.add(fatEdge(Pmid, Q2, 0xe879f9, 0.028));
-      overlayRoot.add(dashed(Pmid, Q1, 0x22d3ee));
-      overlayRoot.add(dashed(Pmid, Q2, 0xe879f9));
-      const r = len * 0.4;
-      overlayRoot.add(angleArc(Pmid, d1, d2, r));
-      // ∟ at P: PG₁ ⊥ SB (face SAB) and PG₂ ⊥ SB (face SBC) — 面面交角 teaching focus
-      const edgeDir = SB.clone(); // S→B along shared edge
-      overlayRoot.add(rightAngleMark(Pmid, edgeDir, d1, 0.22, 0xf8fafc, ang.nSab));
-      overlayRoot.add(rightAngleMark(Pmid, edgeDir, d2, 0.22, 0xf8fafc, ang.nSbc));
-      addLabel('P', Pmid, true);
-      addLabel('G₁', Q1, true);
-      addLabel('G₂', Q2, true);
+      const sbLen2 = SB.lengthSq();
+      const tA = P.A.clone().sub(P.S).dot(SB) / sbLen2;
+      const tC = P.C.clone().sub(P.S).dot(SB) / sbLen2;
+      // clamp to segment for drawing safety (square pyramid: interior for normal h,b)
+      const t = Math.min(1, Math.max(0, tA));
+      const footP = P.S.clone().addScaledVector(SB, t);
+      if (Math.abs(tA - tC) > 1e-6) {
+        console.warn('Case04: feet from A and C onto SB differ', tA, tC);
+      }
+      const dPA = P.A.clone().sub(footP);
+      const dPC = P.C.clone().sub(footP);
+      overlayRoot.add(fatEdge(footP, P.A, 0x22d3ee, 0.028));
+      overlayRoot.add(fatEdge(footP, P.C, 0xe879f9, 0.028));
+      overlayRoot.add(dashed(footP, P.A, 0x22d3ee));
+      overlayRoot.add(dashed(footP, P.C, 0xe879f9));
+      const r = Math.min(dPA.length(), dPC.length()) * 0.38;
+      overlayRoot.add(angleArc(footP, dPA, dPC, r));
+      // ∟ at P: PA ⊥ SB (face SAB) and PC ⊥ SB (face SBC)
+      const edgeDir = SB.clone();
+      overlayRoot.add(rightAngleMark(footP, edgeDir, dPA, 0.22, 0xf8fafc, ang.nSab));
+      overlayRoot.add(rightAngleMark(footP, edgeDir, dPC, 0.22, 0xf8fafc, ang.nSbc));
+      addLabel('P', footP, true);
     }
   }
 

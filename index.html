@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>角錐交角實驗室｜馬Sir教室</title>
+<meta name="description" content="HKDSE 數學：正四角錐 S–ABCD 線線／線面／側面底面／側面側面交角 3D 實驗室。馬Sir教室，唔收集學生資料。">
+<meta name="theme-color" content="#070b14">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpolygon points='32,6 58,54 6,54' fill='%2322d3ee'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<style>
+:root{
+  --bg:#070b14; --panel:#0e1524; --panel2:#121c2e; --line:#1e2a40;
+  --text:#e8eef8; --muted:#8b9bb4; --cyan:#22d3ee; --magenta:#e879f9;
+  --yellow:#fbbf24; --accent:#38bdf8; --ok:#34d399; --card:#0b1322ee;
+  --radius:14px; --shadow:0 12px 40px #0008;
+  font-family:"Segoe UI","PingFang HK","Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);overflow:hidden}
+#app{display:grid;grid-template-columns:minmax(280px,340px) 1fr;height:100%;}
+@media(max-width:900px){
+  #app{grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:auto}
+  aside{max-height:42vh;overflow:auto;border-right:none;border-bottom:1px solid var(--line)}
+  body{overflow:auto}
+}
+aside{
+  background:linear-gradient(180deg,#0c1422 0%,#0a101c 100%);
+  border-right:1px solid var(--line);padding:16px 16px 24px;
+  display:flex;flex-direction:column;gap:14px;overflow:auto;
+}
+.brand{display:flex;flex-direction:column;gap:4px}
+.brand .eyebrow{font-size:11px;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase}
+.brand h1{margin:0;font-size:1.15rem;font-weight:700;letter-spacing:.02em}
+.brand p{margin:0;font-size:12px;color:var(--muted);line-height:1.45}
+.sec{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.sec h2{margin:0 0 10px;font-size:11px;letter-spacing:.12em;color:var(--muted);font-weight:600}
+.cases{display:flex;flex-direction:column;gap:6px}
+.case{
+  text-align:left;border:1px solid var(--line);background:var(--panel2);
+  color:var(--text);border-radius:12px;padding:10px 12px;cursor:pointer;
+  transition:.15s;font-size:13px;line-height:1.35;
+}
+.case:hover{border-color:#334155}
+.case.active{border-color:var(--cyan);box-shadow:inset 0 0 0 1px #22d3ee55,0 0 20px #22d3ee22;background:#0f2233}
+.case .num{color:var(--cyan);font-weight:700;margin-right:6px;font-variant-numeric:tabular-nums}
+.case .en{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.slider-row{margin-bottom:10px}
+.slider-row:last-child{margin-bottom:0}
+.slider-row label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+.slider-row label strong{color:var(--text);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--cyan)}
+.checks{display:flex;flex-direction:column;gap:8px;font-size:13px}
+.checks label{display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text)}
+.checks input{accent-color:var(--cyan)}
+.foot-note{font-size:11px;color:var(--muted);line-height:1.4;margin-top:auto;padding-top:8px}
+.foot-note a{color:var(--accent)}
+main{position:relative;min-height:360px;background:
+  radial-gradient(ellipse at 30% 20%,#122038 0%,transparent 50%),
+  radial-gradient(ellipse at 80% 80%,#1a1030 0%,transparent 45%),
+  #070b14}
+#c{width:100%;height:100%;display:block;touch-action:none}
+.hud-top{
+  position:absolute;top:14px;left:14px;right:14px;display:flex;
+  justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none;z-index:2;
+}
+.badge{
+  pointer-events:none;background:var(--card);border:1px solid var(--line);
+  backdrop-filter:blur(10px);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);
+}
+.badge .k{font-size:11px;color:var(--muted);letter-spacing:.08em}
+.badge .v{font-size:1.85rem;font-weight:800;color:var(--yellow);font-variant-numeric:tabular-nums;line-height:1.1}
+.badge .sub{font-size:12px;color:var(--cyan);margin-top:2px}
+.hint{
+  position:absolute;top:14px;right:14px;font-size:11px;color:var(--muted);
+  background:#0b1322aa;border:1px solid var(--line);border-radius:999px;padding:6px 12px;
+  pointer-events:none;z-index:2;
+}
+.bottom-panel{
+  position:absolute;left:14px;right:14px;bottom:14px;z-index:2;
+  display:grid;gap:10px;pointer-events:none;
+}
+.card{
+  pointer-events:auto;background:var(--card);border:1px solid var(--line);
+  backdrop-filter:blur(12px);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);
+}
+.card h3{margin:0 0 6px;font-size:14px;color:var(--cyan)}
+.card p{margin:0;font-size:13px;color:#cbd5e1;line-height:1.5}
+.formula-box{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:13px;overflow-x:auto}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:11px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:3px;border-radius:2px;display:inline-block}
+.sw.cyan{background:var(--cyan)} .sw.mag{background:var(--magenta)}
+.sw.yel{background:var(--yellow)} .sw.dash{background:#94a3b8;background-image:repeating-linear-gradient(90deg,#94a3b8 0 4px,transparent 4px 8px)}
+.labels-layer{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.vlabel{
+  position:absolute;transform:translate(-50%,-120%);
+  background:#0b1220cc;border:1px solid #334155;color:#f8fafc;
+  font-size:12px;font-weight:700;padding:2px 7px;border-radius:6px;
+  white-space:nowrap;text-shadow:0 1px 2px #000;
+}
+.vlabel.aux{color:var(--yellow);border-color:#854d0e}
+.reset-btn{
+  position:absolute;top:48px;right:14px;z-index:3;pointer-events:auto;
+  background:#0e1524;border:1px solid var(--line);color:var(--text);
+  border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer;
+}
+.reset-btn:hover{border-color:var(--cyan)}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside>
+    <div class="brand">
+      <div class="eyebrow">PYRAMID / ANGLE LAB</div>
+      <h1>角錐交角實驗室</h1>
+      <p>正四角錐 <strong>S–ABCD</strong>（底面正方形，高 SO ⊥ 底面）。拖曳旋轉 · 滾輪縮放。馬Sir教室 · 唔收集學生資料。</p>
+    </div>
+
+    <div class="sec">
+      <h2>01 / 揀一種交角</h2>
+      <div class="cases" id="cases">
+        <button type="button" class="case active" data-case="ll">
+          <span class="num">01</span>線線交角
+          <span class="en">Line ↔ Line · 側棱 SA 與 SB</span>
+        </button>
+        <button type="button" class="case" data-case="lp">
+          <span class="num">02</span>線面交角
+          <span class="en">Line ↔ Plane · 側棱 SA 與底面 ABCD</span>
+        </button>
+        <button type="button" class="case" data-case="lb">
+          <span class="num">03</span>側面 ↔ 底面
+          <span class="en">Lateral ↔ Base · 二面角（面 SAB 與底面）</span>
+        </button>
+        <button type="button" class="case" data-case="llat">
+          <span class="num">04</span>側面 ↔ 側面
+          <span class="en">Lateral ↔ Lateral · 二面角（SAB 與 SBC）</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>02 / 尺寸</h2>
+      <div class="slider-row">
+        <label>高 <em>h</em>（SO）<strong id="hVal">3.0</strong></label>
+        <input type="range" id="h" min="1.5" max="8" step="0.1" value="3">
+      </div>
+      <div class="slider-row">
+        <label>底邊長 <em>b</em><strong id="bVal">4.0</strong></label>
+        <input type="range" id="b" min="2" max="8" step="0.1" value="4">
+      </div>
+      <div class="slider-row">
+        <label>面透明度<strong id="opVal">70%</strong></label>
+        <input type="range" id="opacity" min="10" max="95" step="1" value="70">
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>03 / 顯示</h2>
+      <div class="checks">
+        <label><input type="checkbox" id="showConstruct" checked> 顯示輔助線／作圖</label>
+        <label><input type="checkbox" id="showLabels" checked> 顯示頂點標籤 A,B,C,D,S,O（及 G 等）</label>
+      </div>
+    </div>
+
+    <p class="foot-note">對標夏Sir「PYRAMID / ANGLE LAB」：單一正四角錐＋四個交角情況（Explore）。舊「多固體體積探索」已改為本實驗室。</p>
+  </aside>
+
+  <main>
+    <canvas id="c"></canvas>
+    <div class="labels-layer" id="labels"></div>
+    <div class="hud-top">
+      <div class="badge">
+        <div class="k" id="angleName">∠ASB</div>
+        <div class="v" id="angleDeg">—°</div>
+        <div class="sub" id="angleHint">線線交角</div>
+      </div>
+    </div>
+    <div class="hint">拖曳旋轉 · 滾輪／捏合縮放</div>
+    <button type="button" class="reset-btn" id="resetView">重設視角</button>
+    <div class="bottom-panel">
+      <div class="card">
+        <h3 id="descTitle">線線交角 · ∠ASB</h3>
+        <p id="descBody">側棱 SA 與 SB 相交於頂點 S；交角喺三角形 SAB 平面內量度。</p>
+        <div class="formula-box" id="formula"></div>
+      </div>
+      <div class="card legend">
+        <span><i class="sw cyan"></i>第一線／面</span>
+        <span><i class="sw mag"></i>第二線／面</span>
+        <span><i class="sw yel"></i>量度交角 θ</span>
+        <span><i class="sw dash"></i>輔助／投影／作圖</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const canvas = document.getElementById('c');
+const labelsEl = document.getElementById('labels');
+const state = {
+  caseId: 'll',
+  h: 3,
+  b: 4,
+  opacity: 0.7,
+  showConstruct: true,
+  showLabels: true,
+};
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setClearColor(0x070b14, 1);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+camera.position.set(7.2, 5.4, 8.5);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.target.set(0, 1.2, 0);
+controls.minDistance = 4;
+controls.maxDistance = 28;
+
+scene.add(new THREE.AmbientLight(0xb0c4de, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 1.05);
+key.position.set(6, 10, 4);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x88aaff, 0.35);
+fill.position.set(-5, 3, -4);
+scene.add(fill);
+
+const grid = new THREE.GridHelper(16, 16, 0x243044, 0x152033);
+grid.position.y = 0;
+scene.add(grid);
+
+const solidRoot = new THREE.Group();
+scene.add(solidRoot);
+const overlayRoot = new THREE.Group();
+scene.add(overlayRoot);
+
+function clearGroup(g) {
+  while (g.children.length) {
+    const ch = g.children[0];
+    g.remove(ch);
+    ch.traverse?.(obj => {
+      if (obj.geometry) obj.geometry.dispose();
+      if (obj.material) {
+        if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+        else obj.material.dispose();
+      }
+    });
+  }
+}
+
+function pts() {
+  const { h, b } = state;
+  const s = b / 2;
+  return {
+    A: new THREE.Vector3(-s, 0, -s),
+    B: new THREE.Vector3( s, 0, -s),
+    C: new THREE.Vector3( s, 0,  s),
+    D: new THREE.Vector3(-s, 0,  s),
+    S: new THREE.Vector3(0, h, 0),
+    O: new THREE.Vector3(0, 0, 0),
+  };
+}
+
+/** note: Three.js Y-up: base on XZ, height along +Y. Math labels still SO ⊥ base. */
+
+function faceMesh(a, b, c, color, opacity) {
+  const geo = new THREE.BufferGeometry().setFromPoints([a, b, c]);
+  geo.setIndex([0, 1, 2]);
+  geo.computeVertexNormals();
+  const mat = new THREE.MeshStandardMaterial({
+    color, transparent: true, opacity, side: THREE.DoubleSide,
+    metalness: 0.05, roughness: 0.55, depthWrite: false,
+  });
+  return new THREE.Mesh(geo, mat);
+}
+
+function lineSeg(a, b, color, width = 2) {
+  const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
+  const mat = new THREE.LineBasicMaterial({ color, linewidth: width });
+  return new THREE.Line(geo, mat);
+}
+
+function dashed(a, b, color = 0x94a3b8) {
+  const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
+  const mat = new THREE.LineDashedMaterial({ color, dashSize: 0.12, gapSize: 0.08, transparent: true, opacity: 0.95 });
+  const ln = new THREE.Line(geo, mat);
+  ln.computeLineDistances();
+  return ln;
+}
+
+function fatEdge(a, b, color, radius = 0.035) {
+  const dir = new THREE.Vector3().subVectors(b, a);
+  const len = dir.length();
+  const geo = new THREE.CylinderGeometry(radius, radius, len, 10);
+  const mat = new THREE.MeshStandardMaterial({ color, metalness: 0.1, roughness: 0.4, emissive: color, emissiveIntensity: 0.25 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(a).add(b).multiplyScalar(0.5);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+  return mesh;
+}
+
+function angleArc(origin, dirA, dirB, radius, color = 0xfbbf24, segments = 48) {
+  const u = dirA.clone().normalize();
+  const v = dirB.clone().normalize();
+  let ang = Math.acos(THREE.MathUtils.clamp(u.dot(v), -1, 1));
+  const axis = new THREE.Vector3().crossVectors(u, v);
+  if (axis.lengthSq() < 1e-10) {
+    // parallel — pick any perp
+    axis.set(1, 0, 0).cross(u);
+    if (axis.lengthSq() < 1e-10) axis.set(0, 0, 1).cross(u);
+  }
+  axis.normalize();
+  const pts = [];
+  for (let i = 0; i <= segments; i++) {
+    const t = (i / segments) * ang;
+    const p = u.clone().applyAxisAngle(axis, t).multiplyScalar(radius).add(origin);
+    pts.push(p);
+  }
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  const mat = new THREE.LineBasicMaterial({ color });
+  const line = new THREE.Line(geo, mat);
+  // soft sector fill
+  const fan = [origin.clone(), ...pts];
+  const fgeo = new THREE.BufferGeometry().setFromPoints(fan);
+  const idx = [];
+  for (let i = 1; i < fan.length - 1; i++) idx.push(0, i, i + 1);
+  fgeo.setIndex(idx);
+  fgeo.computeVertexNormals();
+  const fmat = new THREE.MeshBasicMaterial({
+    color, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false,
+  });
+  const mesh = new THREE.Mesh(fgeo, fmat);
+  const g = new THREE.Group();
+  g.add(line); g.add(mesh);
+  return g;
+}
+
+
+/** Classic textbook ∟ mark in the plane of dirEdge × dirPerp (assumed ⊥). */
+function rightAngleMark(origin, dirEdge, dirPerp, size = 0.2, color = 0xf8fafc, planeNormal = null) {
+  const u = dirEdge.clone().normalize();
+  const v = dirPerp.clone().normalize();
+  let o = origin.clone();
+  if (planeNormal && planeNormal.lengthSq() > 1e-12) {
+    o.add(planeNormal.clone().normalize().multiplyScalar(0.02));
+  }
+  const a = o.clone().addScaledVector(u, size);
+  const b = o.clone().addScaledVector(v, size);
+  const c = o.clone().addScaledVector(u, size).addScaledVector(v, size);
+  const g = new THREE.Group();
+  // thin bright tubes so the L stays visible from any OrbitControls angle
+  g.add(fatEdge(a, c, color, 0.012));
+  g.add(fatEdge(c, b, color, 0.012));
+  return g;
+}
+
+function deg(rad) { return rad * 180 / Math.PI; }
+
+function computeAngles(P) {
+  const { h, b } = state;
+  // 1 line-line SA·SB from S
+  const SA = P.A.clone().sub(P.S);
+  const SB = P.B.clone().sub(P.S);
+  const cosLL = THREE.MathUtils.clamp(SA.clone().normalize().dot(SB.clone().normalize()), -1, 1);
+  const ll = Math.acos(cosLL);
+
+  // 2 line-plane SA vs base (XZ / y=0): sin β = |uy|/|u|
+  const lp = Math.asin(THREE.MathUtils.clamp(Math.abs(SA.y) / SA.length(), 0, 1));
+
+  // 3 dihedral lateral-base: construction M midpoint AB
+  const M = P.A.clone().add(P.B).multiplyScalar(0.5);
+  const MS = P.S.clone().sub(M);
+  const MO = P.O.clone().sub(M); // in base, ⊥ AB
+  const lb = Math.acos(THREE.MathUtils.clamp(MS.clone().normalize().dot(MO.clone().normalize()), -1, 1));
+
+  // 4 dihedral lateral-lateral SAB vs SBC (interior)
+  const nSab = new THREE.Vector3().crossVectors(P.A.clone().sub(P.S), P.B.clone().sub(P.S)).normalize();
+  const nSbc = new THREE.Vector3().crossVectors(P.B.clone().sub(P.S), P.C.clone().sub(P.S)).normalize();
+  const interior = new THREE.Vector3(0, h / 4, 0);
+  const midSab = P.S.clone().add(P.A).add(P.B).multiplyScalar(1 / 3);
+  const midSbc = P.S.clone().add(P.B).add(P.C).multiplyScalar(1 / 3);
+  if (nSab.dot(interior.clone().sub(midSab)) > 0) nSab.negate();
+  if (nSbc.dot(interior.clone().sub(midSbc)) > 0) nSbc.negate();
+  const angOut = Math.acos(THREE.MathUtils.clamp(nSab.dot(nSbc), -1, 1));
+  const llat = Math.PI - angOut;
+
+  // closed forms (for formula display verification)
+  const formulas = {
+    ll: { cos: (h * h) / (h * h + (b * b) / 2) },
+    lp: { sin: h / Math.sqrt(h * h + (b * b) / 2) },
+    lb: { tan: (2 * h) / b }, // φ = arctan(2h/b)
+    llat: { cosOut: (b * b) / (4 * h * h + b * b) },
+  };
+
+  return { ll, lp, lb, llat, formulas, M, nSab, nSbc };
+}
+
+function buildSolid() {
+  clearGroup(solidRoot);
+  const P = pts();
+  const op = state.opacity;
+  const baseCol = 0x334155;
+  const latCol = 0x38bdf8;
+
+  // base ABCD as two tris
+  solidRoot.add(faceMesh(P.A, P.B, P.C, baseCol, op * 0.85));
+  solidRoot.add(faceMesh(P.A, P.C, P.D, baseCol, op * 0.85));
+  // lateral
+  solidRoot.add(faceMesh(P.S, P.A, P.B, latCol, op));
+  solidRoot.add(faceMesh(P.S, P.B, P.C, latCol, op));
+  solidRoot.add(faceMesh(P.S, P.C, P.D, latCol, op));
+  solidRoot.add(faceMesh(P.S, P.D, P.A, latCol, op));
+
+  // wireframe edges (subtle)
+  const edgeCol = 0xcbd5e1;
+  const edges = [
+    [P.A, P.B], [P.B, P.C], [P.C, P.D], [P.D, P.A],
+    [P.S, P.A], [P.S, P.B], [P.S, P.C], [P.S, P.D],
+  ];
+  for (const [a, b] of edges) solidRoot.add(lineSeg(a, b, edgeCol));
+
+  // height SO dashed always light
+  solidRoot.add(dashed(P.S, P.O, 0x64748b));
+}
+
+function highlightFace(a, b, c, color) {
+  const m = faceMesh(a, b, c, color, 0.55);
+  m.material.emissive = new THREE.Color(color);
+  m.material.emissiveIntensity = 0.35;
+  m.material.opacity = 0.5;
+  overlayRoot.add(m);
+}
+
+function buildOverlay() {
+  clearGroup(overlayRoot);
+  labelsEl.innerHTML = '';
+  const P = pts();
+  const ang = computeAngles(P);
+  const showC = state.showConstruct;
+
+  let theta = 0;
+  let name = '';
+  let hint = '';
+  let title = '';
+  let body = '';
+  let tex = '';
+
+  if (state.caseId === 'll') {
+    theta = ang.ll;
+    name = '∠ASB';
+    hint = '線線交角 · 側棱';
+    title = '線線交角 · ∠ASB';
+    body = '側棱 SA 與 SB 相交於頂點 S；交角喺三角形 SAB 嘅平面內量度（金色扇形）。';
+    tex = String.raw`\cos\theta=\dfrac{h^{2}}{h^{2}+\frac{b^{2}}{2}}\Rightarrow\theta=\arccos\!\left(\dfrac{h^{2}}{h^{2}+\frac{b^{2}}{2}}\right)`;
+    overlayRoot.add(fatEdge(P.S, P.A, 0x22d3ee, 0.045));
+    overlayRoot.add(fatEdge(P.S, P.B, 0xe879f9, 0.045));
+    if (showC) {
+      overlayRoot.add(lineSeg(P.A, P.B, 0x64748b));
+      const dA = P.A.clone().sub(P.S);
+      const dB = P.B.clone().sub(P.S);
+      const r = Math.min(dA.length(), dB.length()) * 0.38;
+      overlayRoot.add(angleArc(P.S, dA, dB, r));
+    }
+  } else if (state.caseId === 'lp') {
+    theta = ang.lp;
+    name = '∠SAO（線面）';
+    hint = '線面交角 · SA 與底面';
+    title = '線面交角 · 側棱 SA 與底面 ABCD';
+    body = '線與平面嘅交角＝該線同佢喺平面上正投影所夾嘅角。SA 喺底面嘅投影為 OA，故於 A 量 ∠SAO。';
+    tex = String.raw`\sin\beta=\dfrac{h}{\sqrt{h^{2}+\frac{b^{2}}{2}}}\Rightarrow\beta=\arcsin\!\left(\dfrac{h}{\sqrt{h^{2}+\frac{b^{2}}{2}}}\right)`;
+    overlayRoot.add(fatEdge(P.S, P.A, 0x22d3ee, 0.045));
+    if (showC) {
+      overlayRoot.add(dashed(P.O, P.A, 0xe879f9));
+      overlayRoot.add(fatEdge(P.O, P.A, 0xe879f9, 0.028));
+      // highlight base lightly
+      highlightFace(P.A, P.B, P.C, 0xe879f9);
+      highlightFace(P.A, P.C, P.D, 0xe879f9);
+      const dAS = P.S.clone().sub(P.A);
+      const dAO = P.O.clone().sub(P.A);
+      const r = Math.min(dAS.length(), dAO.length()) * 0.42;
+      overlayRoot.add(angleArc(P.A, dAS, dAO, r));
+    }
+  } else if (state.caseId === 'lb') {
+    theta = ang.lb;
+    name = '二面角 SAB–底';
+    hint = '側面 ↔ 底面';
+    title = '側面 ↔ 底面 · 二面角（面 SAB 與底面）';
+    body = '取 AB 中點 M。底面內 OM ⊥ AB，側面內 SM ⊥ AB；於 M 量 ∠SMO（即二面角嘅平面角）。';
+    tex = String.raw`\tan\phi=\dfrac{2h}{b}\Rightarrow\phi=\arctan\!\left(\dfrac{2h}{b}\right)`;
+    highlightFace(P.S, P.A, P.B, 0x22d3ee);
+    highlightFace(P.A, P.B, P.C, 0xe879f9);
+    highlightFace(P.A, P.C, P.D, 0xe879f9);
+    const M = ang.M;
+    if (showC) {
+      overlayRoot.add(fatEdge(P.A, P.B, 0xf8fafc, 0.03)); // shared edge AB
+      overlayRoot.add(dashed(P.O, M, 0x94a3b8));
+      overlayRoot.add(fatEdge(M, P.S, 0x22d3ee, 0.035));
+      overlayRoot.add(fatEdge(M, P.O, 0xe879f9, 0.03));
+      const dMS = P.S.clone().sub(M);
+      const dMO = P.O.clone().sub(M);
+      const r = Math.min(dMS.length(), dMO.length()) * 0.45;
+      overlayRoot.add(angleArc(M, dMS, dMO, r));
+      // ∟ at M: OM ⊥ AB (base) and SM ⊥ AB (face SAB)
+      const dAB = P.B.clone().sub(P.A);
+      const nBase = new THREE.Vector3(0, 1, 0);
+      const nSabLb = new THREE.Vector3().crossVectors(P.A.clone().sub(P.S), P.B.clone().sub(P.S)).normalize();
+      overlayRoot.add(rightAngleMark(M, dAB, dMO, 0.22, 0xf8fafc, nBase));
+      overlayRoot.add(rightAngleMark(M, dAB, dMS, 0.22, 0xf8fafc, nSabLb));
+      // aux label G/M
+      addLabel('M', M, true);
+    }
+  } else {
+    // llat
+    theta = ang.llat;
+    name = '二面角 SAB–SBC';
+    hint = '側面 ↔ 側面（內角）';
+    title = '側面 ↔ 側面 · 二面角（SAB 與 SBC）';
+    body = '相鄰側面 SAB 與 SBC 沿共用側棱 SB 所夾之內二面角。作圖：於 SB 上取點 P，分別喺兩面內作垂直於 SB 嘅線，再量兩線夾角。';
+    tex = String.raw`\cos\alpha_{\mathrm{n}}=\dfrac{b^{2}}{4h^{2}+b^{2}},\quad\theta_{\mathrm{內}}=\pi-\arccos\!\left(\dfrac{b^{2}}{4h^{2}+b^{2}}\right)`;
+    highlightFace(P.S, P.A, P.B, 0x22d3ee);
+    highlightFace(P.S, P.B, P.C, 0xe879f9);
+    overlayRoot.add(fatEdge(P.S, P.B, 0xf8fafc, 0.04));
+    if (showC) {
+      const SB = P.B.clone().sub(P.S);
+      const Pmid = P.S.clone().add(P.B).multiplyScalar(0.5);
+      // directions in each face ⊥ SB: n × SB
+      const d1 = new THREE.Vector3().crossVectors(ang.nSab, SB).normalize();
+      const d2 = new THREE.Vector3().crossVectors(ang.nSbc, SB).normalize();
+      // orient both pointing somewhat "away from apex along face"
+      // flip so they point toward face interiors from edge — use midpoints of AB, BC
+      const midAB = P.A.clone().add(P.B).multiplyScalar(0.5);
+      const midBC = P.B.clone().add(P.C).multiplyScalar(0.5);
+      if (d1.dot(midAB.clone().sub(Pmid)) < 0) d1.negate();
+      if (d2.dot(midBC.clone().sub(Pmid)) < 0) d2.negate();
+      const len = Math.min(state.b, state.h) * 0.55;
+      const Q1 = Pmid.clone().add(d1.clone().multiplyScalar(len));
+      const Q2 = Pmid.clone().add(d2.clone().multiplyScalar(len));
+      overlayRoot.add(fatEdge(Pmid, Q1, 0x22d3ee, 0.028));
+      overlayRoot.add(fatEdge(Pmid, Q2, 0xe879f9, 0.028));
+      overlayRoot.add(dashed(Pmid, Q1, 0x22d3ee));
+      overlayRoot.add(dashed(Pmid, Q2, 0xe879f9));
+      const r = len * 0.4;
+      overlayRoot.add(angleArc(Pmid, d1, d2, r));
+      // ∟ at P: PG₁ ⊥ SB (face SAB) and PG₂ ⊥ SB (face SBC) — 面面交角 teaching focus
+      const edgeDir = SB.clone(); // S→B along shared edge
+      overlayRoot.add(rightAngleMark(Pmid, edgeDir, d1, 0.22, 0xf8fafc, ang.nSab));
+      overlayRoot.add(rightAngleMark(Pmid, edgeDir, d2, 0.22, 0xf8fafc, ang.nSbc));
+      addLabel('P', Pmid, true);
+      addLabel('G₁', Q1, true);
+      addLabel('G₂', Q2, true);
+    }
+  }
+
+  document.getElementById('angleName').textContent = name;
+  document.getElementById('angleDeg').textContent = deg(theta).toFixed(2) + '°';
+  document.getElementById('angleHint').textContent = hint;
+  document.getElementById('descTitle').textContent = title;
+  document.getElementById('descBody').textContent = body;
+  const fEl = document.getElementById('formula');
+  if (typeof katex !== 'undefined') {
+    katex.render(tex, fEl, { throwOnError: false, displayMode: true });
+  } else {
+    fEl.textContent = tex;
+  }
+
+  if (state.showLabels) {
+    addLabel('S', P.S);
+    addLabel('A', P.A);
+    addLabel('B', P.B);
+    addLabel('C', P.C);
+    addLabel('D', P.D);
+    addLabel('O', P.O);
+  }
+
+  // store for label projection
+  labelWorld = [];
+  labelsEl.querySelectorAll('.vlabel').forEach(el => {
+    const x = parseFloat(el.dataset.x), y = parseFloat(el.dataset.y), z = parseFloat(el.dataset.z);
+    labelWorld.push({ el, v: new THREE.Vector3(x, y, z) });
+  });
+}
+
+let labelWorld = [];
+
+function addLabel(text, v, aux = false) {
+  const el = document.createElement('div');
+  el.className = 'vlabel' + (aux ? ' aux' : '');
+  el.textContent = text;
+  el.dataset.x = v.x; el.dataset.y = v.y; el.dataset.z = v.z;
+  labelsEl.appendChild(el);
+}
+
+function projectLabels() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  for (const { el, v } of labelWorld) {
+    const p = v.clone().project(camera);
+    if (p.z > 1) { el.style.display = 'none'; continue; }
+    el.style.display = 'block';
+    el.style.left = ((p.x * 0.5 + 0.5) * w) + 'px';
+    el.style.top = ((-p.y * 0.5 + 0.5) * h) + 'px';
+  }
+}
+
+function resize() {
+  const main = canvas.parentElement;
+  const w = main.clientWidth, h = main.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / Math.max(h, 1);
+  camera.updateProjectionMatrix();
+}
+
+function rebuild() {
+  buildSolid();
+  buildOverlay();
+}
+
+function syncUI() {
+  document.getElementById('hVal').textContent = state.h.toFixed(1);
+  document.getElementById('bVal').textContent = state.b.toFixed(1);
+  document.getElementById('opVal').textContent = Math.round(state.opacity * 100) + '%';
+}
+
+document.getElementById('h').addEventListener('input', e => {
+  state.h = parseFloat(e.target.value); syncUI(); rebuild();
+});
+document.getElementById('b').addEventListener('input', e => {
+  state.b = parseFloat(e.target.value); syncUI(); rebuild();
+});
+document.getElementById('opacity').addEventListener('input', e => {
+  state.opacity = parseFloat(e.target.value) / 100; syncUI(); rebuild();
+});
+document.getElementById('showConstruct').addEventListener('change', e => {
+  state.showConstruct = e.target.checked; rebuild();
+});
+document.getElementById('showLabels').addEventListener('change', e => {
+  state.showLabels = e.target.checked; rebuild();
+});
+document.getElementById('cases').addEventListener('click', e => {
+  const btn = e.target.closest('.case');
+  if (!btn) return;
+  document.querySelectorAll('.case').forEach(b => b.classList.toggle('active', b === btn));
+  state.caseId = btn.dataset.case;
+  rebuild();
+});
+document.getElementById('resetView').addEventListener('click', () => {
+  camera.position.set(7.2, 5.4, 8.5);
+  controls.target.set(0, state.h * 0.35, 0);
+  controls.update();
+});
+
+window.addEventListener('resize', resize);
+
+// wait katex
+function boot() {
+  resize();
+  syncUI();
+  rebuild();
+  (function loop() {
+    requestAnimationFrame(loop);
+    controls.update();
+    // keep target near pyramid
+    controls.target.y = state.h * 0.35;
+    renderer.render(scene, camera);
+    projectLabels();
+  })();
+}
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', () => setTimeout(boot, 50));
+} else {
+  setTimeout(boot, 50);
+}
+
+// numeric self-check in console for h=3,b=4
+{
+  const bak = { h: state.h, b: state.b };
+  state.h = 3; state.b = 4;
+  const a = computeAngles(pts());
+  console.info('[spot-check h=3 b=4]', {
+    '線線': deg(a.ll).toFixed(4),
+    '線面': deg(a.lp).toFixed(4),
+    '側底': deg(a.lb).toFixed(4),
+    '側側內': deg(a.llat).toFixed(4),
+  });
+  state.h = bak.h; state.b = bak.b;
+}
+</script>
+</body>
+</html>
